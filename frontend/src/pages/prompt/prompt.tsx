@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./prompt.css";
+import {Link} from "react-router-dom";
 
 // All CSS is embedded here. You can copy this and move it to a `prompt.css` file.
 const PromptPage: React.FC = () => {
@@ -48,13 +48,13 @@ const PromptPage: React.FC = () => {
             Aura
           </a>
           <nav className="header-nav">
-            <a href="/devpost">DevPost</a>
-            <a href="/github">Github</a>
-            <a href="/about">About us</a>
+            <a href="https://knighthacksviii.devpost.com/" target="_blank">DevPost</a>
+            <a href="https://github.com/munishbp/Aura" target="_blank">Github</a>
+            <Link to="/about">About us</Link>
           </nav>
         </header>
 
-        <main className="prompt-main-content">
+        <main className="main-content">
           <div className="prompt-form-container">
             {/* Patient File Dropdown */}
             <div className="form-group">

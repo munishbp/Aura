@@ -1,0 +1,41 @@
+import React from "react";
+import {Link} from "react-router-dom";
+
+const AboutPage: React.FC = () => {
+    return(
+        <>
+            <div className="page-container">
+                <header className="page-header">
+                    <a href="/" className="header-brand">
+                        Aura
+                    </a>
+                    <nav className="header-nav">
+                        <a href="https://knighthacksviii.devpost.com/" target="_blank">DevPost</a>
+                        <a href="https://github.com/munishbp/Aura" target="_blank">Github</a>
+                        <Link to="/about">About us</Link>
+                    </nav>
+                </header>
+
+
+
+                <main className="main-content">
+                    {/* Removed GraphicPlaceholder and graphic-caption */}
+
+                    <h1 className="main-headline">
+                        About Us.
+                    </h1>
+
+                    <p className="sub-headline">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    </p>
+                </main>
+
+            </div>
+        </>
+    );
+};
+
+export default AboutPage;

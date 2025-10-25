@@ -5,41 +5,44 @@ import "./homepage.css";
 // The main React component
 const HomePage: React.FC = () => {
   return (
-    <>
-      <div className="homepage-container">
-        <header className="homepage-header">
-          <a href="/" className="header-brand">
-            Aura
-          </a>
-          <nav className="header-nav">
-            <a href="https://knighthacksviii.devpost.com/" target="_blank">DevPost</a>
-            <a href="https://github.com/munishbp/Aura" target="_blank">Github</a>
-            <Link to="/about">About us</Link>
-          </nav>
-        </header>
-
-        <main className="main-content">
-          {/* Removed GraphicPlaceholder and graphic-caption */}
-
-          <h1 className="main-headline">
-            Aura is the next generation model for surgical and medical
-            intervention.
-          </h1>
-
-          <p className="sub-headline">
-            Control every aspect of medical model training and fine-tuning with
-            our flexible API infrastructure.
-          </p>
-
-          <div className="cta-buttons">
-            {/* Replaced the three links with a single "Get Started" button */}
-            <a href="/start" className="btn btn-primary">
-              Get Started
+      <>
+        <div className="homepage-container">
+          <header className="homepage-header">
+            <a href="/" className="header-brand">
+             Aura
             </a>
-          </div>
-        </main>
-      </div>
-    </>
+            <nav className="header-nav">
+              <a href="https://knighthacksviii.devpost.com/" target="_blank">DevPost</a>
+              <a href="https://github.com/munishbp/Aura" target="_blank">Github</a>
+              <Link to="/about">About us</Link>
+            </nav>
+          </header>
+
+          <main className="main-content">
+            {/* Removed GraphicPlaceholder and graphic-caption */}
+            <h1 className="header-logo">
+              <p className="strike"> Aura </p>
+            </h1>
+
+
+            <h2 className="main-headline">
+              Aura is the next generation tool used to model plastic surgery augmentations.
+            </h2>
+
+            <p className="sub-headline">
+              Provide patients with better estimates of plastic surgery outcomes by using generative artificial
+              intelligence.
+            </p>
+
+            <div className="cta-buttons">
+              {/* Replaced the three links with a single "Get Started" button */}
+              <a href="/start" className="btn btn-primary">
+                Get Started
+              </a>
+            </div>
+          </main>
+        </div>
+      </>
   );
 };
 export default HomePage;

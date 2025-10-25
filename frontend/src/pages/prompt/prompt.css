@@ -34,13 +34,16 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
+    justify-content: flex-start; /* ← changed from center */
+    overflow: hidden;
+    padding-top: 6rem;
 }
+
 
 /* Header Navigation (same as homepage) */
 .page-header {
     width: 100%;
-    padding: 1.5rem 3rem;
+    padding: 1.5rem 3rem; /* Padding as seen in screenshot */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -50,6 +53,8 @@ body {
     z-index: 10;
 }
 
+
+
 .header-brand {
     font-size: 1.125rem;
     font-weight: 600;
@@ -57,6 +62,7 @@ body {
     text-transform: uppercase;
     text-decoration: none;
     color: var(--text-color);
+
 }
 
 .header-nav {
@@ -76,7 +82,6 @@ body {
     color: var(--text-color);
 }
 
-/* --- NEW STYLES FOR PROMPT PAGE --- */
 
 /* Main Content Area */
 .prompt-main-content {
@@ -84,13 +89,14 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    padding: 8rem 2rem 4rem 2rem; /* More top padding to clear header */
+    text-align: center;
+    padding: 4rem 2rem; /* Add padding for spacing */
+    margin-top: 4rem; /* Push content down from header */
 }
 
 .prompt-form-container {
     width: 100%;
-    max-width: 700px; /* Constrain form width */
+    max-width: 1000px; /* Constrain form width */
     display: flex;
     flex-direction: column;
     gap: 1.5rem; /* Space between form groups */
