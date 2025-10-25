@@ -1,8 +1,25 @@
 import React from "react";
 import {Link} from "react-router-dom";
+import oceanVideo from "/src/assets/ocean.webm";
 
 const AboutPage: React.FC = () => {
     return(
+    <div className="homepage-container">
+      {/* Background Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="bg-video"
+      >
+        <source src={oceanVideo} type="video/webm" />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* Overlay for readability */}
+      <div className="video-overlay"></div>
+
         <>
             <div className="page-container">
                 <header className="page-header">
@@ -35,6 +52,7 @@ const AboutPage: React.FC = () => {
 
             </div>
         </>
+    </div>
     );
 };
 

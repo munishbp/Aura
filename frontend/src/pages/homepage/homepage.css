@@ -21,7 +21,7 @@ Canvas Graphic Colors (on the reference site):
 :root {
   --bg-color: #FFFFFF;
   --text-color: #1a1a1a;
-  --text-color-secondary: #555555;
+  --text-color-secondary: #ffffff;
   --btn-bg: #F3F4F6;
   --btn-bg-hover: #E5E7EB;
   --btn-border: #E5E7EB;
@@ -60,7 +60,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.2); /* adjust opacity */
+  background: rgba(255, 255, 255, 0.371); /* adjust opacity */
   z-index: -1; /* above video but below content */
 }
 
