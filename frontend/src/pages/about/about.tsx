@@ -29,7 +29,7 @@ const AboutPage: React.FC = () => {
                     <nav className="header-nav">
                         <a href="https://knighthacksviii.devpost.com/" target="_blank">DevPost</a>
                         <a href="https://github.com/munishbp/Aura" target="_blank">Github</a>
-                        <Link to="/about">About us</Link>
+                        <Link to="/about">About Us</Link>
                     </nav>
                 </header>
 

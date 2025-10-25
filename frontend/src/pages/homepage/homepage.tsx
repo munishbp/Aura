@@ -41,7 +41,7 @@ const HomePage: React.FC = () => {
           >
             Github
           </a>
-          <Link to="/about">About us</Link>
+          <Link to="/about">About Us</Link>
         </nav>
       </header>
 
