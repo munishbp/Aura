@@ -1,7 +1,7 @@
 // src/App.tsx
 
 import './App.css';
-import { HomePage } from './pages/homepage/homepage'; // 1. Import your page
+import HomePage from './pages/homepage/homepage'; // 1. Import your page
 
 function App() {
   return (

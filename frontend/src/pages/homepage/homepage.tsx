@@ -94,7 +94,7 @@ const HomepageStyles = () => (
 
     .graphic-placeholder {
       width: 100%;
-      max-width: 450px; /* Max width for the graphic */
+      max-width: 800px; /* Max width for the graphic - Increased from 600px */
       margin-bottom: 1rem;
       color: #999;
     }
@@ -110,16 +110,16 @@ const HomepageStyles = () => (
       stroke-width: 0.5;
     }
     .graphic-placeholder .diag-red {
-      stroke: #E57373; /* Muted red */
+      stroke: #EF4444; /* Updated from #E57373 */
       stroke-width: 0.7;
     }
     .graphic-placeholder .diag-blue {
-      stroke: #64B5F6; /* Muted blue */
+      stroke: #3B82F6; /* Updated from #64B5F6 */
       stroke-width: 0.7;
     }
     .graphic-placeholder .node-group {
-      fill: #FFD54F; /* Gold/Yellow */
-      stroke: #BFA440;
+      fill: #EAB308; /* Updated from #FFD54F (yellow) */
+      stroke: #1A1A1A; /* Updated from #BFA440 (main text color) */
       stroke-width: 0.5;
     }
     
@@ -132,17 +132,17 @@ const HomepageStyles = () => (
 
     .main-headline {
       font-family: 'Playfair Display', serif;
-      font-size: 2.5rem; /* 40px */
+      font-size: 2.75rem; /* 44px - Slightly larger */
       font-weight: 500;
-      max-width: 600px;
+      max-width: 1000px; /* Increased from 800px */
       margin: 0 auto 1.5rem auto;
       line-height: 1.3;
       color: var(--text-color);
     }
 
     .sub-headline {
-      font-size: 1rem; /* 16px */
-      max-width: 500px;
+      font-size: 1.1rem; /* 17.6px - Slightly larger */
+      max-width: 800px; /* Increased from 700px */
       margin: 0 auto 2.5rem auto;
       color: var(--text-color-secondary);
       line-height: 1.6;
@@ -203,11 +203,11 @@ const HomepageStyles = () => (
       }
 
       .main-headline {
-        font-size: 2rem; /* Smaller headline for mobile */
+        font-size: 2.25rem; /* Smaller headline for mobile - adjusted */
       }
 
       .sub-headline {
-        font-size: 0.95rem;
+        font-size: 1rem; /* adjusted */
       }
       
       .cta-buttons {
@@ -220,30 +220,7 @@ const HomepageStyles = () => (
 
 // This is a placeholder SVG to represent the complex graphic.
 // You can replace this with your own <img /> tag or a more complex SVG.
-const GraphicPlaceholder = () => (
-    <svg viewBox="0 0 200 100" className="graphic-placeholder">
-        <title>Abstract geometric grid graphic</title>
-        {/* Background Grid */}
-        <path className="grid-line" d="M 0 0 H 200 M 0 25 H 200 M 0 50 H 200 M 0 75 H 200 M 0 100 H 200 M 0 0 V 100 M 50 0 V 100 M 100 0 V 100 M 150 0 V 100 M 200 0 V 100" />
 
-        {/* Diagonal Lines */}
-        <path className="diag-red" d="M 0 0 L 200 100 M 0 50 L 100 100 M 100 0 L 200 50 M 0 100 L 200 0 M 0 50 L 100 0 M 100 100 L 200 50" />
-        <path className="diag-blue" d="M 0 25 L 50 0 M 0 75 L 50 100 M 50 0 L 100 25 M 50 100 L 100 75 M 100 25 L 150 0 M 100 75 L 150 100 M 150 0 L 200 25 M 150 100 L 200 75" />
-
-        {/* Node Clusters */}
-        <g className="node-group">
-            <circle cx="25" cy="12.5" r="3" /> <circle cx="12.5" cy="25" r="3" /> <circle cx="25" cy="37.5" r="3" /> <circle cx="37.5" cy="25" r="3" />
-            <circle cx="75" cy="12.5" r="3" /> <circle cx="62.5" cy="25" r="3" /> <circle cx="75" cy="37.5" r="3" /> <circle cx="87.5" cy="25" r="3" />
-            <circle cx="125" cy="12.5" r="3" /> <circle cx="112.5" cy="25" r="3" /> <circle cx="125" cy="37.5" r="3" /> <circle cx="137.5" cy="25" r="3" />
-            <circle cx="175" cy="12.5" r="3" /> <circle cx="162.5" cy="25" r="3" /> <circle cx="175" cy="37.5" r="3" /> <circle cx="187.5" cy="25" r="3" />
-
-            <circle cx="25" cy="62.5" r="3" /> <circle cx="12.5" cy="75" r="3" /> <circle cx="25" cy="87.5" r="3" /> <circle cx="37.5" cy="75" r="3" />
-            <circle cx="75" cy="62.5" r="3" /> <circle cx="62.5" cy="75" r="3" /> <circle cx="75" cy="87.5" r="3" /> <circle cx="87.5" cy="75" r="3" />
-            <circle cx="125" cy="62.5" r="3" /> <circle cx="112.5" cy="75" r="3" /> <circle cx="125" cy="87.5" r="3" /> <circle cx="137.5" cy="75" r="3" />
-            <circle cx="175" cy="62.5" r="3" /> <circle cx="162.5" cy="75" r="3" /> <circle cx="175" cy="87.5" r="3" /> <circle cx="187.5" cy="75" r="3" />
-        </g>
-    </svg>
-);
 
 
 // The main React component
@@ -258,18 +235,14 @@ const App: React.FC = () => {
                         Aura
                     </a>
                     <nav className="header-nav">
-                        <a href="/tinker">Tinker</a>
-                        <a href="/blog">Blog</a>
-                        <a href="/join">Join us</a>
+                        <a href="/devpost">DevPost</a>
+                        <a href="/github">Github</a>
+                        <a href="/about">About us</a>
                     </nav>
                 </header>
 
                 <main className="main-content">
-                    <GraphicPlaceholder />
-
-                    <p className="graphic-caption">
-                        *network graphic attribution or description goes here*
-                    </p>
+                    {/* Removed GraphicPlaceholder and graphic-caption */}
 
                     <h1 className="main-headline">
                         Aura is the next generation model for surgical and medical intervention.
@@ -281,14 +254,9 @@ const App: React.FC = () => {
                     </p>
 
                     <div className="cta-buttons">
-                        <a href="/waitlist" className="btn btn-primary">
-                            Join waitlist
-                        </a>
-                        <a href="/announcement" className="btn btn-secondary">
-                            Announcement
-                        </a>
-                        <a href="/docs" className="btn btn-secondary">
-                            Docs
+                        {/* Replaced the three links with a single "Get Started" button */}
+                        <a href="/start" className="btn btn-primary">
+                            Get Started
                         </a>
                     </div>
                 </main>
@@ -299,3 +267,8 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+
+
+
+
