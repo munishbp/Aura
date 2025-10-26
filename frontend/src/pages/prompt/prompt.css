@@ -2,10 +2,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500&display=swap');
 
 /* CSS Variables for colors (same as homepage) */
+.main-content {
+    --primary-text-color: #1a1a1a; /* A nice red, for this section only */
+}
+
 :root {
-    --bg-color: #FFFFFF;
-    --text-color: #1a1a1a;
-    --text-color-secondary: #555555;
+    --bg-color: #1a1a1a;
+    --text-color: #FAF9F6;
+    --text-color-secondary: #FAF9F6;
     --btn-bg: #F3F4F6;
     --btn-bg-hover: #E5E7EB;
     --btn-border: #E5E7EB;
@@ -18,7 +22,7 @@ body {
     margin: 0;
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-color);
-    color: var(--text-color);
+    color: var(--primary-text-color);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -39,48 +43,42 @@ body {
     padding-top: 6rem;
 }
 
+.nav-logo-img {
+    height: 20px;
+    width: auto;
+}
 
 /* Header Navigation (same as homepage) */
-.page-header {
-    width: 100%;
-    padding: 1.5rem 3rem; /* Padding as seen in screenshot */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: absolute;
+.homepage-header {
+    position: fixed;
     top: 0;
     left: 0;
-    z-index: 10;
+    width: 100%;
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between; /* BRAND LEFT | NAV RIGHT */
+    align-items: center;
+    z-index: 999;
 }
 
 
 
-.header-brand {
+.header-brand-p {
     font-size: 1.125rem;
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--primary-text-color);
 
 }
 
-.header-nav {
-    display: flex;
-    gap: 2.5rem;
+.header-nav-p a {
+
+    color: var(--primary-text-color);
+
 }
 
-.header-nav a {
-    text-decoration: none;
-    color: var(--text-color-secondary);
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.2s ease;
-}
-
-.header-nav a:hover {
-    color: var(--text-color);
-}
 
 
 /* Main Content Area */
@@ -95,7 +93,7 @@ body {
 }
 
 .prompt-form-container {
-    width: 100%;
+    width: 220%;
     max-width: 1000px; /* Constrain form width */
     display: flex;
     flex-direction: column;
@@ -120,7 +118,7 @@ body {
     padding: 0.75rem 1rem;
     font-family: 'Inter', sans-serif;
     font-size: 1rem;
-    color: var(--text-color);
+    color: var(--primary-text-color);
     background-color: #FFFFFF;
     border: 1px solid var(--input-border);
     border-radius: 0.5rem; /* Standard rounded corners */
@@ -154,19 +152,28 @@ body {
 .tts-controls {
     display: flex;
     align-items: center;
+    justify-content: center;  /* ✅ this centers them */
     gap: 1rem;
+    width: 100%;
 }
 
 .btn {
     text-decoration: none;
-    padding: 0.65rem 1.25rem;
+    padding: 0rem 1.5rem;
     border-radius: 9999px; /* Full pill shape */
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 500;
+    height: 40px;
     transition: all 0.2s ease;
-    display: inline-block;
+    display: flex;
     cursor: pointer;
     border: none;
+    line-height: 40px;
+    align-items: center;
+    justify-content: center;
+    min-width: 160px; /* pick a size that fits the longest button text */
+
+
 }
 
 .btn-primary {

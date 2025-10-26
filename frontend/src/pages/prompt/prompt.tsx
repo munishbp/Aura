@@ -8,7 +8,7 @@ import axios from "axios";
 const PromptPage: React.FC = () => {
   // State for form inputs
   const [patientFile, setPatientFile] = useState("");
-  const [procedureType, setProcedureType] = useState("Rhinoplasty");
+  const [procedureType, setProcedureType] = useState("");
   const [guidelinesText, setGuidelinesText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -183,10 +183,10 @@ const PromptPage: React.FC = () => {
 
   return (
     <>
-      <div className="page-container">
-        <header className="page-header">
-          <a href="/" className="header-brand">
-            Aura
+      <div className="homepage-container">
+        <header className="homepage-header">
+          <a href="/">
+            <img src={logo} alt="Aura Brand Logo" className="nav-logo-img" />
           </a>
           <nav className="header-nav">
             <a href="https://knighthacksviii.devpost.com/" target="_blank">
@@ -232,6 +232,9 @@ const PromptPage: React.FC = () => {
                 value={procedureType}
                 onChange={(e) => setProcedureType(e.target.value)}
               >
+                <option value="" disabled>
+                  Select a procedure...
+                </option>
                 <option value="Rhinoplasty">Rhinoplasty</option>
                 <option value="Rhytidectomy">Rhytidectomy</option>
               </select>

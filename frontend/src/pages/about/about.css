@@ -18,13 +18,26 @@ Canvas Graphic Colors (on the reference site):
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500&display=swap');
 
 /* CSS Variables for colors */
+
+/* In homepage.css */
+.main-content {
+    --primary-text-color: #ffffff; /* A nice red, for this section only */
+}
 :root {
     --bg-color: #FFFFFF;
-    --text-color: #1a1a1a;
-    --text-color-secondary: #555555;
+    --text-color: #ffffff;
+    --text-color-secondary: #ffffff;
     --btn-bg: #F3F4F6;
     --btn-bg-hover: #E5E7EB;
     --btn-border: #E5E7EB;
+}
+
+.header-logo-img {
+    height: 80px; /* Or whatever height you prefer */
+    width: auto; /* This will maintain the aspect ratio */
+
+    margin-top: 10px;
+    margin-left: 20px;
 }
 
 /* Global & Body */
@@ -50,7 +63,6 @@ body {
     align-items: center;
     justify-content: flex-start; /* ← changed from center */
     overflow: hidden;
-    padding-top: 6rem;
 }
 
 /* Header Navigation */
@@ -78,6 +90,11 @@ body {
 .header-nav {
     display: flex;
     gap: 2.5rem; /* Spacing between nav items */
+}
+
+.nav-logo-img {
+    height: 20px;
+    width: auto;
 }
 
 .header-nav a {
