@@ -235,6 +235,7 @@ const PromptPage: React.FC = () => {
                 <option value="" disabled>
                   Select a procedure...
                 </option>
+                <option value="Blepharoplasty">Blepharoplasty</option>
                 <option value="Rhinoplasty">Rhinoplasty</option>
                 <option value="Rhytidectomy">Rhytidectomy</option>
               </select>
