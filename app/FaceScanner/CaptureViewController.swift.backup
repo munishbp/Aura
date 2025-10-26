@@ -1,0 +1,566 @@
+//
+//  captureviewcontroller.swift
+//  facescanner
+//
+//  captures faces using the rear camera and lidar sensor
+//
+
+import UIKit
+import ARKit
+import RealityKit
+import Vision
+import AVFoundation
+
+// this screen lets u take pics of ur face and scan it with lidar
+class CaptureViewController: UIViewController {
+
+    // all the ui stuff
+
+    // the ar view shows what the camera sees
+    private var arView: ARView!
+
+    // button to take photos
+    private var capturePhotoButton: UIButton!
+
+    // button to scan with lidar
+    private var scanLiDARButton: UIButton!
+
+    // shows instructions and status messages
+    private var statusLabel: UILabel!
+
+    // holds all the photo previews
+    private var photoPreviewContainer: UIView!
+
+    // individual photo preview boxes
+    private var photoPreviewViews: [UIImageView] = []
+
+    // shows the depth map from lidar
+    private var depthPreviewView: UIImageView!
+
+    // the green box around the face
+    private var faceDetectionLayer: CALayer!
+
+    // ar session stuff
+
+    // the ar session for the rear camera
+    private let session = ARSession()
+
+    // face detection stuff
+
+    // the vision thing that detects faces
+    private var faceDetectionRequest: VNDetectFaceRectanglesRequest!
+
+    // the box around the face that was detected
+    private var detectedFaceRect: CGRect?
+
+    // captured data variables
+
+    // stores the 5 photos we take
+    private var capturedPhotos: [UIImage] = []
+
+    // tells the user what to photograph
+    private let photoPrompts = [
+        "Take Upper Left Quadrant of the Face",
+        "Take Lower Left Quadrant of the Face",
+        "Take Center of the Face",
+        "Take Upper Right Quadrant of the Face",
+        "Take Lower Right Quadrant of the Face"
+    ]
+
+    // all the depth data from lidar
+    private var accumulatedDepthFrames: [Data] = []
+
+    // whether we are currently scanning
+    private var isScanning = false
+
+    // timer for the scan
+    private var scanTimer: Timer?
+
+    // how far through the scan we are (0 to 1)
+    private var scanProgress: Float = 0.0
+
+    // camera device for flash control
+    private var cameraDevice: AVCaptureDevice?
+
+    // lifecycle stuff
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // setup face detection and ui when screen loads
+        setupFaceDetection()
+        setupUI()
+        setupARSession()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // stop the ar session when we leave
+        session.pause()
+        scanTimer?.invalidate()
+        // turn off flash if it's on
+        disableFlash()
+    }
+
+    // setup face detection stuff
+
+    // makes the vision face detection thing work
+    private func setupFaceDetection() {
+        faceDetectionRequest = VNDetectFaceRectanglesRequest { [weak self] request, error in
+            guard let observations = request.results as? [VNFaceObservation] else { return }
+
+            DispatchQueue.main.async {
+                self?.processFaceDetection(observations)
+            }
+        }
+    }
+
+    // ui setup functions
+
+    // sets up all the buttons and labels on the screen
+    private func setupUI() {
+        view.backgroundColor = .black
+
+        // the camera view takes up whole screen
+        arView = ARView(frame: view.bounds)
+        view.addSubview(arView)
+
+        // the layer where we draw the face box
+        faceDetectionLayer = CALayer()
+        arView.layer.addSublayer(faceDetectionLayer)
+
+        // instructions at the top of screen
+        statusLabel = UILabel(frame: CGRect(x: 20, y: 60, width: view.bounds.width - 40, height: 80))
+        statusLabel.textAlignment = .center
+        statusLabel.textColor = .white
+        statusLabel.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        statusLabel.layer.cornerRadius = 10
+        statusLabel.clipsToBounds = true
+        statusLabel.numberOfLines = 3
+        statusLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        statusLabel.text = photoPrompts[0]
+        view.addSubview(statusLabel)
+
+        // the box on the right that shows all the photos u took
+        let containerHeight: CGFloat = 580
+        let containerWidth: CGFloat = 100
+        photoPreviewContainer = UIView(frame: CGRect(
+            x: view.bounds.width - containerWidth - 20,
+            y: 160,
+            width: containerWidth,
+            height: containerHeight
+        ))
+        photoPreviewContainer.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        photoPreviewContainer.layer.cornerRadius = 8
+        photoPreviewContainer.layer.borderWidth = 2
+        photoPreviewContainer.layer.borderColor = UIColor.systemGreen.cgColor
+        view.addSubview(photoPreviewContainer)
+
+        // make 5 little boxes for the 5 photos
+        for i in 0..<5 {
+            let previewView = UIImageView(frame: CGRect(
+                x: 10,
+                y: 10 + CGFloat(i) * 110,
+                width: containerWidth - 20,
+                height: 100
+            ))
+            previewView.contentMode = .scaleAspectFill
+            previewView.clipsToBounds = true
+            previewView.layer.cornerRadius = 6
+            previewView.backgroundColor = UIColor.darkGray.withAlphaComponent(0.5)
+            previewView.transform = CGAffineTransform(rotationAngle: .pi / 2) // 90 degree rotation
+
+            // add numbers to the boxes
+            let numberLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+            numberLabel.text = "\(i + 1)"
+            numberLabel.textAlignment = .center
+            numberLabel.font = UIFont.systemFont(ofSize: 36, weight: .bold)
+            numberLabel.textColor = UIColor.white.withAlphaComponent(0.3)
+            previewView.addSubview(numberLabel)
+
+            photoPreviewContainer.addSubview(previewView)
+            photoPreviewViews.append(previewView)
+        }
+
+        // depth map preview on the left side
+        depthPreviewView = UIImageView(frame: CGRect(x: 20, y: 160, width: 100, height: 200))
+        depthPreviewView.contentMode = .scaleAspectFit
+        depthPreviewView.layer.borderWidth = 2
+        depthPreviewView.layer.borderColor = UIColor.systemBlue.cgColor
+        depthPreviewView.layer.cornerRadius = 8
+        depthPreviewView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        depthPreviewView.transform = CGAffineTransform(rotationAngle: .pi / 2) // 90 degree rotation
+        view.addSubview(depthPreviewView)
+
+        // green button to take photos
+        capturePhotoButton = UIButton(frame: CGRect(x: view.bounds.width/4 - 35, y: view.bounds.height - 120, width: 70, height: 70))
+        capturePhotoButton.backgroundColor = .systemGreen
+        capturePhotoButton.layer.cornerRadius = 35
+        capturePhotoButton.layer.borderWidth = 4
+        capturePhotoButton.layer.borderColor = UIColor.white.cgColor
+        capturePhotoButton.setTitle("📷", for: .normal)
+        capturePhotoButton.titleLabel?.font = UIFont.systemFont(ofSize: 30)
+        capturePhotoButton.addTarget(self, action: #selector(capturePhotoTapped), for: .touchUpInside)
+        view.addSubview(capturePhotoButton)
+
+        // blue button to scan with lidar
+        scanLiDARButton = UIButton(frame: CGRect(x: 3*view.bounds.width/4 - 35, y: view.bounds.height - 120, width: 70, height: 70))
+        scanLiDARButton.backgroundColor = .systemBlue
+        scanLiDARButton.layer.cornerRadius = 35
+        scanLiDARButton.layer.borderWidth = 4
+        scanLiDARButton.layer.borderColor = UIColor.white.cgColor
+        scanLiDARButton.setTitle("📡", for: .normal)
+        scanLiDARButton.titleLabel?.font = UIFont.systemFont(ofSize: 30)
+        scanLiDARButton.isEnabled = false // disabled at first
+        scanLiDARButton.alpha = 0.5
+        scanLiDARButton.addTarget(self, action: #selector(scanLiDARTapped), for: .touchUpInside)
+        view.addSubview(scanLiDARButton)
+
+        // button to go to review screen
+        let nextButton = UIButton(frame: CGRect(x: view.bounds.width/2 - 60, y: view.bounds.height - 50, width: 120, height: 44))
+        nextButton.setTitle("Review →", for: .normal)
+        nextButton.backgroundColor = UIColor.systemIndigo
+        nextButton.layer.cornerRadius = 22
+        nextButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        nextButton.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
+        nextButton.alpha = 0 // hidden at first
+        nextButton.tag = 999
+        view.addSubview(nextButton)
+    }
+
+    // ar session setup stuff
+
+    // starts up the ar session for the rear camera and lidar
+    private func setupARSession() {
+        arView.session = session
+
+        guard ARWorldTrackingConfiguration.isSupported else {
+            statusLabel.text = "AR World Tracking not supported"
+            return
+        }
+
+        let configuration = ARWorldTrackingConfiguration()
+
+        // Enable scene depth from LiDAR
+        if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
+            configuration.frameSemantics.insert(.sceneDepth)
+        } else {
+            statusLabel.text = "⚠️ LiDAR not available on this device"
+        }
+
+        configuration.planeDetection = [.horizontal, .vertical]
+
+        session.delegate = self
+        session.run(configuration)
+
+        // setup camera device for flash control
+        setupCameraDevice()
+    }
+
+    // camera flash control functions
+
+    // sets up the rear camera device for flash control
+    private func setupCameraDevice() {
+        if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
+            cameraDevice = device
+        }
+    }
+
+    // turns the flash on to max brightness
+    private func enableFlash() {
+        guard let device = cameraDevice, device.hasTorch else { return }
+
+        do {
+            try device.lockForConfiguration()
+            if device.isTorchModeSupported(.on) {
+                try device.setTorchModeOn(level: 1.0) // max brightness
+            }
+            device.unlockForConfiguration()
+        } catch {
+            print("Flash could not be enabled: \(error)")
+        }
+    }
+
+    // turns the flash off
+    private func disableFlash() {
+        guard let device = cameraDevice, device.hasTorch else { return }
+
+        do {
+            try device.lockForConfiguration()
+            if device.torchMode == .on {
+                device.torchMode = .off
+            }
+            device.unlockForConfiguration()
+        } catch {
+            print("Flash could not be disabled: \(error)")
+        }
+    }
+
+    // face detection functions
+
+    // processes the faces that were detected
+    private func processFaceDetection(_ observations: [VNFaceObservation]) {
+        // remove old boxes
+        faceDetectionLayer.sublayers?.forEach { $0.removeFromSuperlayer() }
+
+        guard let face = observations.first else {
+            detectedFaceRect = nil
+            return
+        }
+
+        // convert the coords to screen coords
+        let boundingBox = face.boundingBox
+        let size = arView.bounds.size
+
+        // vision uses different origin than uikit so we gotta convert
+        let x = boundingBox.origin.x * size.width
+        let y = (1 - boundingBox.origin.y - boundingBox.height) * size.height
+        let width = boundingBox.width * size.width
+        let height = boundingBox.height * size.height
+
+        detectedFaceRect = CGRect(x: x, y: y, width: width, height: height)
+
+        // draw the green box around the face
+        let boxLayer = CALayer()
+        boxLayer.frame = detectedFaceRect!
+        boxLayer.borderColor = UIColor.systemGreen.cgColor
+        boxLayer.borderWidth = 3
+        boxLayer.cornerRadius = 8
+        faceDetectionLayer.addSublayer(boxLayer)
+
+        // add label text
+        let label = CATextLayer()
+        label.string = "Face Detected"
+        label.fontSize = 14
+        label.foregroundColor = UIColor.systemGreen.cgColor
+        label.backgroundColor = UIColor.black.withAlphaComponent(0.7).cgColor
+        label.frame = CGRect(x: x, y: y - 25, width: 120, height: 20)
+        label.alignmentMode = .center
+        faceDetectionLayer.addSublayer(label)
+    }
+
+    // runs face detection on each frame
+    private func detectFaces(in pixelBuffer: CVPixelBuffer) {
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .right, options: [:])
+
+        try? imageRequestHandler.perform([faceDetectionRequest])
+    }
+
+    // capture photo functions
+
+    // when u tap the camera button it captures a photo
+    @objc private func capturePhotoTapped() {
+        guard capturedPhotos.count < 5 else {
+            statusLabel.text = "Already captured 5 photos!"
+            return
+        }
+
+        guard let frame = session.currentFrame else {
+            statusLabel.text = "No camera frame available"
+            return
+        }
+
+        // Warn if no face detected
+        if detectedFaceRect == nil {
+            statusLabel.text = "⚠️ No face detected - capture anyway?"
+        }
+
+        // Convert pixel buffer to UIImage
+        let image = CIImage(cvPixelBuffer: frame.capturedImage)
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(image, from: image.extent) else {
+            statusLabel.text = "Failed to capture photo"
+            return
+        }
+
+        let capturedPhoto = UIImage(cgImage: cgImage)
+        capturedPhotos.append(capturedPhoto)
+
+        // Update preview for this photo
+        let index = capturedPhotos.count - 1
+        if index < photoPreviewViews.count {
+            photoPreviewViews[index].image = capturedPhoto
+            // Remove number label
+            photoPreviewViews[index].subviews.forEach { $0.removeFromSuperview() }
+        }
+
+        // Haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+
+        // Update status with next prompt
+        if capturedPhotos.count < 5 {
+            statusLabel.text = "Photo \(capturedPhotos.count)/5 captured!\n\n" + photoPrompts[capturedPhotos.count]
+        } else {
+            statusLabel.text = "All 5 photos captured! ✓\nNow scan face with LiDAR"
+
+            // Enable LiDAR button
+            scanLiDARButton.isEnabled = true
+            UIView.animate(withDuration: 0.3) {
+                self.scanLiDARButton.alpha = 1.0
+            }
+        }
+    }
+
+    // when u tap the lidar button to scan
+    @objc private func scanLiDARTapped() {
+        if isScanning {
+            // stop if already scanning
+            stopLiDARScan()
+        } else {
+            // start scanning
+            startLiDARScan()
+        }
+    }
+
+    // starts the lidar scanning
+    private func startLiDARScan() {
+        guard capturedPhotos.count == 5 else {
+            statusLabel.text = "Capture 5 photos first!"
+            return
+        }
+
+        isScanning = true
+        accumulatedDepthFrames.removeAll()
+        scanProgress = 0.0
+
+        // change button to red and show stop button
+        scanLiDARButton.backgroundColor = .systemRed
+        scanLiDARButton.setTitle("⏹", for: .normal)
+
+        // disable photo button during scan
+        capturePhotoButton.isEnabled = false
+        capturePhotoButton.alpha = 0.5
+
+        statusLabel.text = "Scanning... Move around face slowly\nTap ⏹ to finish"
+
+        // turn on flash to max brightness
+        enableFlash()
+
+        // vibrate the phone
+        let generator = UIImpactFeedbackGenerator(style: .heavy)
+        generator.impactOccurred()
+
+        // start a timer to update progress
+        scanTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.updateScanProgress()
+        }
+    }
+
+    // stops the lidar scanning
+    private func stopLiDARScan() {
+        isScanning = false
+        scanTimer?.invalidate()
+        scanTimer = nil
+
+        // turn off flash
+        disableFlash()
+
+        // change button back to blue
+        scanLiDARButton.backgroundColor = .systemBlue
+        scanLiDARButton.setTitle("📡", for: .normal)
+        scanLiDARButton.isEnabled = false
+        scanLiDARButton.alpha = 0.5
+
+        // turn camera button back on
+        capturePhotoButton.isEnabled = true
+        capturePhotoButton.alpha = 1.0
+
+        // vibrate phone to show done
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+
+        statusLabel.text = "✓ Scan complete! \(accumulatedDepthFrames.count) frames captured\nTap Review to continue"
+
+        // check if we can go to next screen
+        checkIfReadyToReview()
+    }
+
+    // updates the progress bar while scanning
+    private func updateScanProgress() {
+        scanProgress += 0.01
+
+        let progressPercent = Int(min(scanProgress * 100, 100))
+        statusLabel.text = "Scanning... \(progressPercent)% (\(accumulatedDepthFrames.count) frames)\nMove around face slowly"
+    }
+
+    // shows the next button when all data is ready
+    private func checkIfReadyToReview() {
+        if capturedPhotos.count == 5 && !accumulatedDepthFrames.isEmpty {
+            if let nextButton = view.viewWithTag(999) {
+                UIView.animate(withDuration: 0.3) {
+                    nextButton.alpha = 1.0
+                }
+            }
+        }
+    }
+
+    // goes to the review screen
+    @objc private func nextButtonTapped() {
+        guard capturedPhotos.count == 5 else {
+            statusLabel.text = "Please capture 5 photos"
+            return
+        }
+
+        guard !accumulatedDepthFrames.isEmpty else {
+            statusLabel.text = "Please complete LiDAR scan"
+            return
+        }
+
+        let reviewVC = ReviewViewController()
+        reviewVC.capturedPhotos = capturedPhotos
+        reviewVC.accumulatedDepthFrames = accumulatedDepthFrames
+        reviewVC.modalPresentationStyle = .fullScreen
+
+        present(reviewVC, animated: true)
+    }
+
+    // data processing stuff
+
+    // converts depth pixel buffer to data
+    private func convertDepthMapToData(_ pixelBuffer: CVPixelBuffer) -> Data {
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
+
+        let height = CVPixelBufferGetHeight(pixelBuffer)
+        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+
+        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
+            return Data()
+        }
+
+        return Data(bytes: baseAddress, count: height * bytesPerRow)
+    }
+
+    // converts the depth map to an image so we can see it
+    private func depthMapToImage(_ pixelBuffer: CVPixelBuffer) -> UIImage? {
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
+            return nil
+        }
+        return UIImage(cgImage: cgImage)
+    }
+}
+
+// ar session delegate stuff
+
+extension CaptureViewController: ARSessionDelegate {
+    // this gets called every time the ar frame updates
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        // detect faces in the current frame
+        detectFaces(in: frame.capturedImage)
+
+        // collect depth data if we are scanning
+        if isScanning, let depthMap = frame.sceneDepth?.depthMap {
+            let depthData = convertDepthMapToData(depthMap)
+            accumulatedDepthFrames.append(depthData)
+
+            // show the depth preview every 10 frames
+            if accumulatedDepthFrames.count % 10 == 0 {
+                DispatchQueue.main.async {
+                    self.depthPreviewView.image = self.depthMapToImage(depthMap)
+                }
+            }
+        }
+    }
+}
