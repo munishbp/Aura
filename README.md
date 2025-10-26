@@ -27,7 +27,7 @@ Follow these steps to get both the backend and frontend servers running.
 First, clone the project from GitHub to your local machine:
 
 ```bash
-git clone https://github.com/Aura
+git clone https://github.com/munishbp/Aura.git
 ```
 
 ## Inspiration
