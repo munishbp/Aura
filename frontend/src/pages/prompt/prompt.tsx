@@ -237,6 +237,7 @@ const PromptPage: React.FC = () => {
                 </option>
                 <option value="Rhinoplasty">Rhinoplasty</option>
                 <option value="Rhytidectomy">Rhytidectomy</option>
+                <option value="Blepharoplasty">Blepharoplasty</option>
               </select>
             </div>
 

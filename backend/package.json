@@ -18,7 +18,8 @@
     "elevenlabs": "^1.59.0",
     "express": "^5.1.0",
     "mongoose": "^8.19.2",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "node-ssh": "^13.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
