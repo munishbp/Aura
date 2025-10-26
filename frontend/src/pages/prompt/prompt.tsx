@@ -7,7 +7,7 @@ import logo from "/src/assets/logo.png";
 const PromptPage: React.FC = () => {
   // State for form inputs
   const [patientFile, setPatientFile] = useState("");
-  const [procedureType, setProcedureType] = useState("Rhinoplasty");
+  const [procedureType, setProcedureType] = useState("");
   const [guidelinesText, setGuidelinesText] = useState("");
 
   // State for TTS simulation
@@ -83,6 +83,9 @@ const PromptPage: React.FC = () => {
                 value={procedureType}
                 onChange={(e) => setProcedureType(e.target.value)}
               >
+                <option value="" disabled>
+                  Select a procedure...
+                </option>
                 <option value="Rhinoplasty">Rhinoplasty</option>
                 <option value="Rhytidectomy">Rhytidectomy</option>
               </select>
