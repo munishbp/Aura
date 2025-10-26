@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./prompt.css";
+import logo from "/src/assets/logo.png";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
