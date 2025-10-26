@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./prompt.css";
-import {Link} from "react-router-dom";
+import logo from "/src/assets/logo.png";
+
 
 // All CSS is embedded here. You can copy this and move it to a `prompt.css` file.
 const PromptPage: React.FC = () => {
@@ -42,16 +43,11 @@ const PromptPage: React.FC = () => {
 
   return (
     <>
-      <div className="page-container">
-        <header className="page-header">
-          <a href="/" className="header-brand">
-            Aura
+      <div className="homepage-container">
+        <header className="homepage-header">
+          <a href="/">
+            <img src={logo} alt="Aura Brand Logo" className="nav-logo-img" />
           </a>
-          <nav className="header-nav">
-            <a href="https://knighthacksviii.devpost.com/" target="_blank">DevPost</a>
-            <a href="https://github.com/munishbp/Aura" target="_blank">Github</a>
-            <Link to="/about">About us</Link>
-          </nav>
         </header>
 
         <main className="main-content">

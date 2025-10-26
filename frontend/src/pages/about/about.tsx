@@ -1,6 +1,8 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import oceanVideo from "/src/assets/ocean.webm";
+import logo from "/src/assets/logo.png";
+
 
 const AboutPage: React.FC = () => {
     return(
@@ -22,9 +24,9 @@ const AboutPage: React.FC = () => {
 
         <>
             <div className="page-container">
-                <header className="page-header">
-                    <a href="/" className="header-brand">
-                        Aura
+                <header className="homepage-header">
+                    <a href="/">
+                        <img src={logo} alt="Aura Brand Logo" className="nav-logo-img" />
                     </a>
                     <nav className="header-nav">
                         <a href="https://knighthacksviii.devpost.com/" target="_blank">DevPost</a>

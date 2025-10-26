@@ -1,33 +1,29 @@
-/*
-Main UI Colors (which we are already using in your CSS variables):
-#FFFFFF (Page background)
-#1A1A1A (Main text, logo)
-#555555 (Secondary text, nav links)
-#F3F4F6 (Button background)
-#E5E7EB (Button border and hover background)
-
-Canvas Graphic Colors (on the reference site):
-#EF4444 (Red lines)
-#3B82F6 (Blue lines)
-#EAB308 (Yellow lines)
-#1A1A1A (The nodes/dots)
-#E5E7EB (The node/dot borders)
- */
-/* Import Google Fonts */
-
+/* ===========================
+   Google Fonts
+=========================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500&display=swap');
 
-/* CSS Variables for colors */
+
+/* ===========================
+   Global Variables
+=========================== */
 :root {
   --bg-color: #FFFFFF;
-  --text-color: #1a1a1a;
-  --text-color-secondary: #ffffff;
+  --text-color: #FAF9F6;
+  --text-color-secondary: #FAF9F6;
   --btn-bg: #F3F4F6;
   --btn-bg-hover: #E5E7EB;
   --btn-border: #E5E7EB;
 }
 
-/* Global & Body */
+
+/* ===========================
+   Global Styles
+=========================== */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
@@ -37,34 +33,35 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-}
 
-/* Background Video */
+/* ===========================
+   Background Video + Overlay
+=========================== */
 .bg-video {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* cover entire screen */
-  z-index: -2;       /* behind everything */
+  object-fit: cover;
+  z-index: -2;
   pointer-events: none;
 }
 
-/* Overlay for readability */
 .video-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.562); /* adjust opacity */
-  z-index: -1; /* above video but below content */
+  background: rgba(70, 70, 70, 0.244);
+  z-index: -1;
 }
 
-/* Main Page Container */
+
+/* ===========================
+   Page Layout
+=========================== */
 .homepage-container {
   position: relative;
   width: 100%;
@@ -73,47 +70,23 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 10rem;
-  z-index: 1; /* content above overlay/video */
+  z-index: 1;
 }
 
-/* Header Navigation */
+
+/* ===========================
+   Header
+=========================== */
 .homepage-header {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   padding: 1.5rem 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10; /* above video & overlay */
-}
-
-.header-logo {
-  font-size: 4rem;
-  font-weight: bold;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-color);
-}
-
-.strike {
-  position: relative;
-  color: black;
-  z-index: 11; /* above overlay */
-}
-
-.strike::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 7.5px;
-  background: white;
-  top: 60.6%;
-  transform: translateY(-50%);
-  z-index: 11;
+  z-index: 999;
 }
 
 .header-brand {
@@ -132,9 +105,9 @@ body {
 
 .header-nav a {
   text-decoration: none;
-  color: var(--text-color-secondary);
   font-size: 0.9rem;
   font-weight: 500;
+  color: var(--text-color-secondary);
   transition: color 0.2s ease;
 }
 
@@ -142,20 +115,61 @@ body {
   color: var(--text-color);
 }
 
-/* Main Content Area */
+
+/* ===========================
+   Optional: Strike Style
+=========================== */
+.strike {
+  position: relative;
+  color: white;
+  z-index: 11;
+}
+
+.strike::after {
+  content: "";
+  position: absolute;
+  top: 55%;
+  left: 0;
+  width: 100%;
+  height: 9px;
+  background: black;
+  transform: translateX(-2.5%);
+  z-index: 11;
+}
+
+
+/* ===========================
+   Logo
+=========================== */
+.header-logo-img {
+  height: 80px;
+  width: auto;
+  margin-top: 10px;
+  margin-left: 20px;
+  margin-bottom: 50px;
+}
+
+.nav-logo-img {
+  height: 20px;
+  width: auto;
+}
+
+
+/* ===========================
+   Main Content
+=========================== */
 .main-content {
+  position: relative;
+  z-index: 1;
+  margin-top: 4rem;
+  padding: 4rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 4rem 2rem;
-  margin-top: 4rem;
-  position: relative;
-  z-index: 1; /* above overlay & video */
 }
 
-/* Headlines */
 .main-headline {
   font-family: 'Playfair Display', serif;
   font-size: 2.75rem;
@@ -170,11 +184,14 @@ body {
   font-size: 1.1rem;
   max-width: 800px;
   margin: 0 auto 2.5rem auto;
-  color: var(--text-color-secondary);
   line-height: 1.6;
+  color: var(--text-color-secondary);
 }
 
-/* Call-to-Action Buttons */
+
+/* ===========================
+   Buttons
+=========================== */
 .cta-buttons {
   display: flex;
   gap: 1.5rem;
@@ -187,14 +204,14 @@ body {
   border-radius: 9999px;
   font-size: 0.9rem;
   font-weight: 500;
-  transition: all 0.2s ease;
   display: inline-block;
+  transition: all 0.2s ease;
 }
 
 .btn-primary {
   background-color: var(--btn-bg);
-  color: #333;
   border: 1px solid var(--btn-border);
+  color: #333;
 }
 
 .btn-primary:hover {
@@ -207,37 +224,4 @@ body {
 
 .btn-secondary:hover {
   color: var(--text-color);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .homepage-header {
-    padding: 1rem 1.5rem;
-  }
-
-  .header-nav {
-    gap: 1.5rem;
-  }
-
-  .header-nav a {
-    font-size: 0.85rem;
-  }
-
-  .main-content {
-    padding: 6rem 1rem 2rem 1rem;
-    margin-top: 0;
-  }
-
-  .main-headline {
-    font-size: 2.25rem;
-  }
-
-  .sub-headline {
-    font-size: 1rem;
-  }
-
-  .cta-buttons {
-    flex-direction: column;
-    gap: 1rem;
-  }
 }
