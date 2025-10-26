@@ -25,7 +25,7 @@ const HomePage: React.FC = () => {
 
                 <nav className="header-nav">
                     <a
-                        href="https://knighthacksviii.devpost.com/"
+                        href="https://devpost.com/software/aura-shaping-the-future-you"
                         target="_blank"
                         rel="noopener noreferrer"
                     >

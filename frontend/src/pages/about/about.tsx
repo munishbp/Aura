@@ -28,7 +28,7 @@ const AboutPage: React.FC = () => {
               <img src={logo} alt="Aura Brand Logo" className="nav-logo-img" />
             </a>
             <nav className="header-nav">
-              <a href="https://knighthacksviii.devpost.com/" target="_blank">DevPost</a>
+              <a href="https://devpost.com/software/aura-shaping-the-future-you" target="_blank">DevPost</a>
               <a href="https://github.com/munishbp/Aura" target="_blank">Github</a>
               <Link to="/about">About Us</Link>
             </nav>
