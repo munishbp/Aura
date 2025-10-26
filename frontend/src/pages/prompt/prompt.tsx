@@ -45,11 +45,15 @@ const PromptPage: React.FC = () => {
 
     try {
       // Send POST request to your backend endpoint
-      const response = await axios.post("/api/transcribe", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data", // Important header for file uploads
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/transcribe",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Important header for file uploads
+          },
+        }
+      );
 
       if (response.data && response.data.transcript) {
         setGuidelinesText(response.data.transcript);
@@ -136,7 +140,7 @@ const PromptPage: React.FC = () => {
     try {
       // 4. Send POST request to backend
       const response = await axios.post(
-        "/api/generate-images",
+        "http://localhost:5000/api/generate-images",
         generationData,
         {
           headers: {
