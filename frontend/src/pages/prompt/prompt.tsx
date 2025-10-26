@@ -1,20 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./prompt.css";
-import logo from "/src/assets/logo.png";
+import logo from "/src/assets/logo.png"; // Assuming logo is imported correctly
 import { Link } from "react-router-dom";
 import axios from "axios";
 
 // All CSS is embedded here. You can copy this and move it to a `prompt.css` file.
 const PromptPage: React.FC = () => {
   // State for form inputs
-  const [patientFile, setPatientFile] = useState("");
-  const [procedureType, setProcedureType] = useState("");
+  const [patientName, setPatientName] = useState(""); // Changed from patientFile
+  const [procedureType, setProcedureType] = useState(""); // Defaulting to empty
   const [guidelinesText, setGuidelinesText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [isGenerating, setIsGenerating] = useState(false);
-  const [imageUrls, setImageUrls] = useState<string | null>(null);
+  // Type correction: imageUrls should be string[] or null, not string | null if expecting multiple
+  const [imageUrls, setImageUrls] = useState<string[] | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -37,7 +38,7 @@ const PromptPage: React.FC = () => {
 
   const sendAudio = async (audioBlob: Blob) => {
     setIsLoading(true);
-    setGuidelinesText("Listening");
+    setGuidelinesText("Transcribing..."); // Changed feedback text
 
     const formData = new FormData();
     formData.append("audioFile", audioBlob, "recording.wav");
@@ -112,12 +113,11 @@ const PromptPage: React.FC = () => {
 
   const handleGenerateClick = async () => {
     // 1. Reset previous results and start loading
-    setImageUrls([]);
+    setImageUrls(null); // Reset to null instead of []
     setGenerationError(null);
     setIsGenerating(true);
 
     // 2. Scroll to results area (smoothly)
-    // We use a slight delay to ensure the DOM updates before scrolling
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({
         behavior: "smooth",
@@ -127,16 +127,11 @@ const PromptPage: React.FC = () => {
 
     // 3. Prepare JSON data
     const generationData = {
-      patientFile: patientFile, // Send the selected filename/ID
+      patientName: patientName, // Changed from patientFile
       procedureType: procedureType,
       prompt: guidelinesText,
       // Add any other relevant data needed by the backend/model
     };
-
-    // Note: If the actual patient file needs to be sent,
-    // this would need to be a multipart/form-data request like sendAudio,
-    // sending both the file input's actual file and the JSON data.
-    // For now, we'll assume sending just the filename/ID is enough.
 
     try {
       // 4. Send POST request to backend
@@ -184,42 +179,53 @@ const PromptPage: React.FC = () => {
   return (
     <>
       <div className="homepage-container">
+        {" "}
+        {/* Corrected class name */}
         <header className="homepage-header">
+          {" "}
+          {/* Corrected class name */}
           <a href="/">
             <img src={logo} alt="Aura Brand Logo" className="nav-logo-img" />
           </a>
           <nav className="header-nav">
-            <a href="https://knighthacksviii.devpost.com/" target="_blank">
+            <a
+              href="https://knighthacksviii.devpost.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               DevPost
             </a>
-            <a href="https://github.com/munishbp/Aura" target="_blank">
+            <a
+              href="https://github.com/munishbp/Aura"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Github
             </a>
             <Link to="/about">About us</Link>
           </nav>
         </header>
-
-        <main className="main-content">
+        <main
+          style={{ paddingTop: "8rem", paddingBottom: "4rem", width: "100%" }}
+        >
+          {" "}
+          {/* Adjusted padding */}
           <div className="prompt-form-container">
-            {/* Patient File Dropdown */}
+            {/* --- CHANGED: Patient Name Input --- */}
             <div className="form-group">
-              <label htmlFor="patient-file" className="form-label">
-                Patient File:
+              <label htmlFor="patient-name" className="form-label">
+                Patient Name:
               </label>
-              <select
-                id="patient-file"
-                className="form-select"
-                value={patientFile}
-                onChange={(e) => setPatientFile(e.target.value)}
-              >
-                <option value="" disabled>
-                  Select a file...
-                </option>
-                <option value="patient-001">Patient_001_Scan.dicom</option>
-                <option value="patient-002">Patient_002_Notes.pdf</option>
-                <option value="patient-003">Patient_003_History.txt</option>
-              </select>
+              <input
+                type="text"
+                id="patient-name"
+                className="form-select" // Consider creating a separate form-input class if styles differ
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
+                placeholder="Enter patient name..."
+              />
             </div>
+            {/* ---------------------------------- */}
 
             {/* Procedure Type Dropdown */}
             <div className="form-group">
@@ -241,7 +247,7 @@ const PromptPage: React.FC = () => {
               </select>
             </div>
 
-            {/* Procedure Guidelines Text-to-Speech Box */}
+            {/* Procedure Guidelines Textarea */}
             <div className="form-group">
               <label htmlFor="procedure-guidelines" className="form-label">
                 Procedure Guidelines
@@ -251,9 +257,9 @@ const PromptPage: React.FC = () => {
                 className="form-textarea"
                 placeholder={
                   isLoading
-                    ? "Transcribing"
+                    ? "Transcribing..." // Changed feedback
                     : isRecording
-                    ? "Processing"
+                    ? "Listening..." // Changed feedback
                     : "Start recording or type guidelines here..."
                 }
                 value={guidelinesText}
@@ -264,7 +270,7 @@ const PromptPage: React.FC = () => {
                 <button
                   className={`btn btn-record ${isRecording ? "recording" : ""}`}
                   onClick={handleRecordClick}
-                  disabled={isLoading}
+                  disabled={isLoading || isGenerating} // Disable during generation too
                 >
                   {isLoading
                     ? "Processing..."
@@ -272,13 +278,91 @@ const PromptPage: React.FC = () => {
                     ? "Stop Recording"
                     : "Start Recording"}
                 </button>
-                {/* You could add a 'Submit' button here as well */}
-                <a href="#" className="btn btn-primary">
-                  Generate Plan
-                </a>
+                {/* --- Changed: Generate Plan Button --- */}
+                <button
+                  className="btn btn-primary"
+                  onClick={handleGenerateClick} // Changed from href="#"
+                  disabled={
+                    isLoading ||
+                    isGenerating ||
+                    !guidelinesText.trim() ||
+                    !procedureType ||
+                    !patientName.trim()
+                  } // Add disable logic
+                >
+                  {isGenerating ? "Generating..." : "Generate Plan"}
+                </button>
+                {/* ------------------------------------- */}
               </div>
             </div>
           </div>
+          {/* --- Results Section --- */}
+          <div
+            ref={resultsRef}
+            className="results-container"
+            style={{
+              marginTop: "3rem",
+              width: "100%",
+              maxWidth: "900px",
+              margin: "3rem auto 0 auto",
+            }}
+          >
+            {isGenerating && (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "2rem",
+                  color: "var(--text-color-secondary)",
+                }}
+              >
+                Generating images... Please wait.
+              </div>
+            )}
+            {generationError && (
+              <div
+                style={{ textAlign: "center", padding: "2rem", color: "red" }}
+              >
+                Error: {generationError}
+              </div>
+            )}
+            {imageUrls &&
+              imageUrls.length > 0 && ( // Check if imageUrls is not null before checking length
+                <div style={{ textAlign: "center" }}>
+                  <h2>Generated Images:</h2>
+                  <div
+                    className="image-gallery"
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "1rem",
+                      flexWrap: "wrap",
+                      marginBottom: "2rem",
+                    }}
+                  >
+                    {imageUrls.map((url, index) => (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`Generated Image ${index + 1}`}
+                        style={{
+                          maxWidth: "30%",
+                          height: "auto",
+                          border: "1px solid var(--input-border)",
+                          borderRadius: "8px",
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleDownloadClick}
+                  >
+                    Download All Images (.zip)
+                  </button>
+                </div>
+              )}
+          </div>
+          {/* End Results Section */}
         </main>
       </div>
     </>
